@@ -27,11 +27,25 @@ DSA >> fromFileName: aFilename [
 	"Public method. Entry point of the Visualization Framework."
 	
 	"es := OCDbgExampleCode loadDataFromPath: aFilename."
-	self assert: [ aFilename isString ].
-	self assert: [ aFilename endsWith: '.ston' ].
-	events := STON fromString: aFilename asFileReference readStream contents.
+	events := self readEventsFromFilename: aFilename.
 	self populateWindows.
-	^ self
+]
+
+{ #category : #'instance creation' }
+DSA >> fromFileName: aFilename task: aTaskIndex [
+
+	| tasks start stop |
+
+	events := self readEventsFromFilename: aFilename.
+	
+	tasks := events select: [ :e | (e isKindOf: DSStartTaskRecord)  or: [ e isKindOf: DSEndingTaskRecord  ] ].
+
+	start := events indexOf: (tasks at: (aTaskIndex * 2) - 1).
+	stop := events indexOf: (tasks at: aTaskIndex * 2 ).
+
+	events := events copyFrom: start to: stop.
+	
+	self populateWindows.
 ]
 
 { #category : #accessing }
@@ -134,6 +148,14 @@ DSA >> populateWindows [
 		isPreviousWindowClosed := anEvent isKindOf: DSWindowClosedRecord
 	]
 	
+]
+
+{ #category : #'as yet unclassified' }
+DSA >> readEventsFromFilename: aFilename [
+
+	self assert: [ aFilename isString ].
+	self assert: [ aFilename endsWith: '.ston' ].
+	^ STON fromString: aFilename asFileReference readStream contents.
 ]
 
 { #category : #accessing }

@@ -59,7 +59,7 @@ DSWindowActivityRecord >> visualizeDebuggingActions [
 				     text: 'In';
 				     color: Color green.
 
-			s2 := RSLabel new text: act context
+			s2 := RSLabel new text: act eventName 
 		].
 	
 		s ifNotNil: [
