@@ -5,7 +5,8 @@ Class {
 		'windowId',
 		'jumps',
 		'previousWindowHistory',
-		'nextHistoryWindows'
+		'nextHistoryWindows',
+		'annotation'
 	],
 	#category : #DebuggingSessionAnalysis
 }
@@ -28,6 +29,18 @@ DSAHistoryWindow >> addNextHistoryWindow: aDSAHistoryWindow [
 	nextHistoryWindows add: aDSAHistoryWindow
 ]
 
+{ #category : #accessing }
+DSAHistoryWindow >> annotation [
+
+	^ annotation ifNil:[annotation := DSWindowAnnotation new]
+]
+
+{ #category : #accessing }
+DSAHistoryWindow >> annotation: anObject [
+
+	annotation := anObject
+]
+
 { #category : #testing }
 DSAHistoryWindow >> color [
 	self isBrowser ifTrue: [ ^ Color green ].
@@ -39,17 +52,27 @@ DSAHistoryWindow >> color [
 
 { #category : #'as yet unclassified' }
 DSAHistoryWindow >> initialize [
+
 	super initialize.
 	nextHistoryWindows := OrderedCollection new
 ]
 
+{ #category : #'public - inspector' }
+DSAHistoryWindow >> inspectionAnnotation [
+
+	<inspectorPresentationOrder: 50 title: 'Annotation'>
+	^ DSWindowElementAnnotationPresenter on: self
+]
+
 { #category : #testing }
 DSAHistoryWindow >> isBrowser [
+
 	^ self jumps first printString beginsWith: 'Browser'
 ]
 
 { #category : #testing }
 DSAHistoryWindow >> isDebugger [
+
 	^ self jumps first printString beginsWith: 'Debugger'
 ]
 
@@ -62,6 +85,7 @@ DSAHistoryWindow >> isImplementorOrSender [
 
 { #category : #testing }
 DSAHistoryWindow >> isInspector [
+
 	^ self jumps first printString beginsWith: 'Inspector'
 ]
 
@@ -79,11 +103,13 @@ DSAHistoryWindow >> jumps: anObject [
 
 { #category : #adding }
 DSAHistoryWindow >> nextHistoryWindows [
+
 	^ nextHistoryWindows
 ]
 
 { #category : #'as yet unclassified' }
 DSAHistoryWindow >> numberOfJumps [
+
 	^ self jumps size
 ]
 

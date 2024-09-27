@@ -12,45 +12,41 @@ Class {
 
 { #category : #accessing }
 DSA >> events [
+
 	^ events
 ]
 
 { #category : #public }
 DSA >> events: aCollection [
+
 	events := aCollection.
-	self populateWindows.
-	^ self
+	self populateWindows
 ]
 
 { #category : #public }
 DSA >> fromFileName: aFilename [
-	"Public method. Entry point of the Visualization Framework."
-	
-	"es := OCDbgExampleCode loadDataFromPath: aFilename."
+
 	events := self readEventsFromFilename: aFilename.
-	self populateWindows.
+	self populateWindows
 ]
 
 { #category : #'instance creation' }
 DSA >> fromFileName: aFilename task: aTaskIndex [
 
 	| tasks start stop |
-
 	events := self readEventsFromFilename: aFilename.
-	
-	tasks := events select: [ :e | (e isKindOf: DSStartTaskRecord)  or: [ e isKindOf: DSEndingTaskRecord  ] ].
-
-	start := events indexOf: (tasks at: (aTaskIndex * 2) - 1).
-	stop := events indexOf: (tasks at: aTaskIndex * 2 ).
-
+	tasks := events select: [ :e |
+		        (e isKindOf: DSStartTaskRecord) or: [
+			        e isKindOf: DSEndingTaskRecord ] ].
+	start := events indexOf: (tasks at: aTaskIndex * 2 - 1).
+	stop := events indexOf: (tasks at: aTaskIndex * 2).
 	events := events copyFrom: start to: stop.
-	
-	self populateWindows.
+	self populateWindows
 ]
 
 { #category : #accessing }
 DSA >> historyWindows [
-	"NEED TO BUILD A VISUALIZATION FOR THIS!!!!!"
+
 	^ (DSRecordHistory on: self events) buildWindowHistory
 ]
 
@@ -239,7 +235,7 @@ DSA >> visualizeHistory [
 				borderColor: #black;
 				padding: 3
 		].
-		"jumps @ popup."
+		jumps @ popup.
 		compound shapes: jumps.
 		compound color: historyWin color.
 		compound model: historyWin.
@@ -249,7 +245,7 @@ DSA >> visualizeHistory [
 		c addShape: compound.
 		compounds add: compound.
 		hi := RSHighlightable new withOutgoingLines.
-		compound "@ RSPopup" @ RSDraggable ].
+		compound @ RSPopup @ RSDraggable ].
 
 	RSLineBuilder arrowedLine
 		canvas: c;

@@ -4,28 +4,18 @@ Extension { #name : #DSWindowActivityRecord }
 DSWindowActivityRecord >> debuggingActions [
 	"Return all step actions and browse actions"
 	^ self events select: [ :e | 
-		{ DSStepActionRecord . 
-
+		({ DSStepActionRecord . 
 		  DSBrowseContextRecord .		
 		  DSSelectInspectorPageRecord .
 		  DSBrowseContextRecord .
 		  DSPlaygroundReadRecord
-		} includes: e class ]
-]
-
-{ #category : #'*DebuggingSessionAnalysis' }
-DSWindowActivityRecord >> duration [
-	^ events last dateTime - events first dateTime
+		} includes: e class) or:[(DSStepRecord allSubclasses includes:  e class) or: [DSBreakpointRecord allSubclasses includes: e class]]] 
 ]
 
 { #category : #'*DebuggingSessionAnalysis' }
 DSWindowActivityRecord >> hasDebuggingOperations [
-	^ self events anySatisfy: [ :e | e isKindOf: DSStepRecord ]
-"	self debuggingActions do: [ :act |
-		({'Over' . 'Into' . 'Through' . 'Restart' . 'Proceed'} includes: act eventName) ifTrue: [ ^ true ]
-	].
-	^ false.
-"
+	
+	^ self events anySatisfy: [ :e | (e isKindOf: DSStepRecord) or: [ e isKindOf: DSBreakpointRecord  ] ]
 ]
 
 { #category : #'*DebuggingSessionAnalysis' }
@@ -45,21 +35,20 @@ DSWindowActivityRecord >> visualizeDebuggingActions [
 	self debuggingActions do: [ :act |
 		| s s2 |
 		"DEBUG ACTION"
-		act class == DSStepActionRecord ifTrue: [
-			d := Dictionary newFromPairs: { 'Over'. '>'. 'Into'. 'V' . 'Through' . '>>' . 'Restart' . 'R' . 'Proceed' . 'P' }.
+		((act isKindOf: DSStepRecord) or: [act isKindOf: DSBreakpointRecord]) ifTrue: [
+			"d := Dictionary newFromPairs: { 'Over'. '>'. 'Into'. 'V' . 'Through' . '>>' . 'Restart' . 'R' . 'Proceed' . 'P' }." 
 			s := RSLabel new
-				     text: (d at: act eventName);
+				     text: act eventSymbol;
 				     color: Color red.
-
-			s2 := RSLabel new text: (act context asString), (act node). ].
+			s2 := RSLabel new text: act printContextAndNode. ].
 	
 		"INSPECTION ACTION"	
-		act class ~~ DSStepActionRecord ifTrue: [
+		((act isKindOf: DSStepRecord) or: [act isKindOf: DSBreakpointRecord])ifFalse: [
 			s := RSLabel new
 				     text: 'In';
 				     color: Color green.
 
-			s2 := RSLabel new text: act eventName 
+			s2 := RSLabel new text: act eventName
 		].
 	
 		s ifNotNil: [
@@ -111,16 +100,16 @@ DSWindowActivityRecord >> visualizeSummarizedDebuggingActions [
 DSWindowActivityRecord >> visualizeSummarizedDebuggingActionsOnGroup: g [
 	"g is a RSGroup"
 	self debuggingActions do: [ :act |
-		| s d |
+		| s  |
 		"DEBUG ACTION"
-		act class == DSStepActionRecord ifTrue: [
-			d := Dictionary newFromPairs: { 'Over'. '>'. 'Into'. 'V' . 'Through' . '>>' . 'Restart' . 'R' . 'Proceed' . 'P' }.
+		((act isKindOf: DSStepRecord) or: [act isKindOf: DSBreakpointRecord])  ifTrue: [
+			"d := Dictionary newFromPairs: { 'Over'. '>'. 'Into'. 'V' . 'Through' . '>>' . 'Restart' . 'R' . 'Proceed' . 'P' }."
 			s := RSLabel new
-				     text: (d at: act eventName);
+				     text: act eventSymbol;
 				     color: Color red ].
 	
 		"INSPECTION ACTION"	
-		act class ~~ DSStepActionRecord ifTrue: [
+		((act isKindOf: DSStepRecord) or: [act isKindOf: DSBreakpointRecord])  ifFalse: [
 			s := RSLabel new
 				     text: 'In';
 				     color: Color green.
