@@ -235,7 +235,7 @@ DSA >> visualizeHistory [
 				borderColor: #black;
 				padding: 3
 		].
-		jumps @ popup.
+		"jumps @ popup".
 		compound shapes: jumps.
 		compound color: historyWin color.
 		compound model: historyWin.
