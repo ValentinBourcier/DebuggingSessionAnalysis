@@ -208,7 +208,7 @@ DSAWindow >> visualizeDebuggingActions [
 				     text: act eventSymbol;
 				     color: Color red.
 
-			s2 := RSLabel new text: (act context asString), (act node). ].
+			s2 := RSLabel new text: (act eventName), ' -> ',  (act node truncateWithElipsisTo: 80). ].
 	
 		"INSPECTION ACTION"	
 		((act isKindOf: DSStepRecord) or: [act isKindOf: DSBreakpointRecord]) ifFalse: [
@@ -216,7 +216,7 @@ DSAWindow >> visualizeDebuggingActions [
 				     text: 'In';
 				     color: Color green.
 
-			s2 := RSLabel new text: act context
+			s2 := RSLabel new text: act eventName
 		].
 	
 		s ifNotNil: [
